@@ -10,7 +10,16 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { height:100%; background:var(--deep); color:#fff; font-family:'Quicksand',sans-serif; overflow-x:hidden; }
 #particles { position:fixed; inset:0; z-index:6; pointer-events:none; }
+#snow { position:fixed; inset:0; z-index:3; pointer-events:none; }
 #sound { position:fixed; top:14px; right:14px; z-index:400; width:48px; height:48px; border-radius:50%; background:rgba(0,0,0,.6); border:1px solid var(--gold); color:var(--gold); font-size:1.2rem; cursor:pointer; }
+
+#cover { position:fixed; inset:0; z-index:300; background:radial-gradient(ellipse at center,#1a0a2e 0%,#0c0614 70%); display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity 1.4s; }
+#cover.hidden { opacity:0; pointer-events:none; }
+.choices { display:flex; gap:18px; margin:20px 0; }
+.choice { font-size:2.8rem; cursor:pointer; transition:transform .2s; }
+.choice:hover { transform:scale(1.15); }
+.msg { min-height:36px; font-size:1.25rem; margin:8px 0; }
+.start-btn { background:linear-gradient(135deg,#ffd700,#ffaa00); border:none; padding:16px 40px; border-radius:40px; font-size:1.2rem; font-weight:700; color:#301934; cursor:pointer; display:none; margin-top:10px; }
 
 #video-stage {
   position:relative; min-height:100vh; min-height:100dvh;
@@ -61,9 +70,22 @@ p { font-size:1.15rem; line-height:1.7; }
 </head>
 <body>
 <canvas id="particles"></canvas>
+<canvas id="snow"></canvas>
 <button id="sound">🔊</button>
 
-<div id="video-stage">
+<div id="cover">
+  <h1 style="font-family:'Great Vibes',cursive; font-size:3rem; color:var(--gold); margin-bottom:10px;">Edelweiss</h1>
+  <p>¿Cuántos años cumple?</p>
+  <div class="choices">
+    <span class="choice" data-a="3">3🌸</span>
+    <span class="choice" data-a="4">4👑</span>
+    <span class="choice" data-a="5">5✨</span>
+  </div>
+  <div class="msg" id="msg"></div>
+  <button class="start-btn" id="start" onclick="startVideo()">✨ Ver el Decreto ✨</button>
+</div>
+
+<div id="video-stage" style="display:none;">
   <video id="main-video" autoplay playsinline loop>
     <source src="4974524d-7173-462d-b077-a033334dec92.mp4" type="video/mp4">
   </video>
@@ -91,22 +113,12 @@ const video = document.getElementById('main-video');
 const soundBtn = document.getElementById('sound');
 let unmuted = true;
 
-// Intentar reproducir con sonido desde el primer momento
 function tryPlayWithSound() {
   video.muted = false;
   video.volume = 0.7;
-  video.play().then(() => {
-    soundBtn.textContent = '🔊';
-    unmuted = true;
-  }).catch(() => {
-    // Si el navegador bloquea, esperar interacción
-    video.muted = true;
-    video.play();
-    soundBtn.textContent = '🔇';
-    unmuted = false;
-  });
+  video.play().then(() => { soundBtn.textContent = '🔊'; unmuted = true; })
+               .catch(() => { video.muted = true; video.play(); soundBtn.textContent = '🔇'; unmuted = false; });
 }
-tryPlayWithSound();
 
 soundBtn.onclick = () => {
   if (unmuted) { video.muted = true; soundBtn.textContent = '🔇'; }
@@ -114,12 +126,48 @@ soundBtn.onclick = () => {
   unmuted = !unmuted;
 };
 
+// Mini-juego
+document.querySelectorAll('.choice').forEach(el => {
+  el.onclick = () => {
+    const msg = document.getElementById('msg');
+    if (el.dataset.a === '4') {
+      msg.textContent = '¡Correcto! 🎉 Cumple 4 años';
+      document.getElementById('start').style.display = 'inline-block';
+    } else {
+      msg.textContent = '¡Inténtalo de nuevo!';
+    }
+  };
+});
+
+function startVideo() {
+  document.getElementById('cover').classList.add('hidden');
+  document.getElementById('video-stage').style.display = 'flex';
+  tryPlayWithSound();
+}
+
 function continueInvitation() {
   document.getElementById('video-stage').style.display = 'none';
   const inv = document.getElementById('invitation');
   inv.style.display = 'flex';
   setTimeout(() => inv.querySelector('.content').classList.add('on'), 100);
 }
+
+// Nieve
+const snow = document.getElementById('snow');
+const sctx = snow.getContext('2d');
+function snowR() { snow.width = innerWidth; snow.height = innerHeight; }
+addEventListener('resize', snowR); snowR();
+let flakes = Array.from({length:60}, () => ({x:Math.random()*snow.width, y:Math.random()*snow.height, r:Math.random()*2.5+1, s:Math.random()+0.4}));
+function snowLoop() {
+  sctx.clearRect(0,0,snow.width,snow.height);
+  sctx.fillStyle = 'rgba(255,255,255,0.7)';
+  flakes.forEach(f => {
+    sctx.beginPath(); sctx.arc(f.x, f.y, f.r, 0, Math.PI*2); sctx.fill();
+    f.y += f.s; if (f.y > snow.height) f.y = -5;
+  });
+  requestAnimationFrame(snowLoop);
+}
+snowLoop();
 
 const c = document.getElementById('particles');
 const ctx = c.getContext('2d');
