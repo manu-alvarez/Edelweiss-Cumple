@@ -55,7 +55,10 @@
 </head>
 <body>
     <button id="sound-btn">🔊</button>
-    <audio id="story-audio" src="https://cdn.pixabay.com/download/audio/2021/11/24/audio_341edbf497.mp3?filename=magical-forest-9307.mp3" loop></audio>
+    <audio id="story-audio" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2021/11/24/audio_341edbf497.mp3?filename=magical-forest-9307.mp3" type="audio/mpeg">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-magical-forest-ambience-1220.mp3" type="audio/mpeg">
+    </audio>
     <audio id="sfx-tap" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3?filename=magic-spell-6005.mp3"></audio>
     <audio id="sfx-success" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b7bf2.mp3?filename=success-1-6297.mp3"></audio>
     <canvas id="snow"></canvas>
@@ -109,17 +112,38 @@
         const audio = document.getElementById('story-audio');
         const sfxTap = document.getElementById('sfx-tap');
         const sfxSuccess = document.getElementById('sfx-success');
-        let isPlaying = true;
-        function tryPlay() {
-            audio.volume = 0.4;
-            audio.play().then(() => { soundBtn.textContent = '🔊'; isPlaying = true; })
-                         .catch(() => { soundBtn.textContent = '🔇'; isPlaying = false; });
+        let isPlaying = false;
+
+        function startAudio() {
+            audio.volume = 0.45;
+            audio.play().then(() => {
+                soundBtn.textContent = '🔊';
+                isPlaying = true;
+            }).catch(() => {
+                soundBtn.textContent = '🔇';
+                isPlaying = false;
+            });
         }
-        tryPlay();
+
+        // Intentar al cargar y también en la primera interacción
+        startAudio();
+        document.body.addEventListener('click', function once() {
+            if (!isPlaying) startAudio();
+            document.body.removeEventListener('click', once);
+        }, { once: true });
+
         soundBtn.onclick = () => {
-            if (isPlaying) { audio.pause(); soundBtn.textContent = '🔇'; }
-            else { audio.volume = 0.4; audio.play(); soundBtn.textContent = '🔊'; }
-            isPlaying = !isPlaying;
+            if (isPlaying) {
+                audio.pause();
+                soundBtn.textContent = '🔇';
+                isPlaying = false;
+            } else {
+                audio.volume = 0.45;
+                audio.play().then(() => {
+                    soundBtn.textContent = '🔊';
+                    isPlaying = true;
+                }).catch(() => {});
+            }
         };
 
         function playTap() { sfxTap.currentTime = 0; sfxTap.volume = 0.6; sfxTap.play().catch(() => {}); }
@@ -181,7 +205,7 @@
         function startStory() {
             playSuccess();
             document.getElementById('cover').classList.add('hidden');
-            audio.play().catch(() => {});
+            if (!isPlaying) startAudio();
         }
 
         const snow = document.getElementById('snow');
