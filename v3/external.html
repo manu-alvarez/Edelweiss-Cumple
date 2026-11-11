@@ -12,14 +12,15 @@ html, body { height:100%; background:var(--deep); color:#fff; font-family:'Quick
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse at 30% 40%, rgba(255,182,230,0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 60%, rgba(212,165,255,0.15) 0%, transparent 45%),
-    linear-gradient(160deg, #0c0614 0%, #1a0a2e 50%, #0c0614 100%);
+  background-image: url('../IMG_9501.webp');
+  background-size: cover;
+  background-position: center;
+  filter: blur(12px) brightness(0.45);
+  transform: scale(1.1);
   animation: bgShift 18s ease-in-out infinite alternate;
   pointer-events: none;
 }
-@keyframes bgShift { 0% { opacity: 0.85; } 100% { opacity: 1; } }
+@keyframes bgShift { 0% { opacity: 0.8; transform: scale(1.1); } 100% { opacity: 0.95; transform: scale(1.15); } }
 #particles { position:fixed; inset:0; z-index:6; pointer-events:none; }
 #snow { position:fixed; inset:0; z-index:3; pointer-events:none; }
 #sound { position:fixed; top:14px; right:14px; z-index:400; width:48px; height:48px; border-radius:50%; background:rgba(0,0,0,.6); border:1px solid var(--gold); color:var(--gold); font-size:1.2rem; cursor:pointer; }
@@ -75,7 +76,7 @@ p { font-size:1.15rem; line-height:1.7; }
   background:rgba(12,6,20,.55); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   border:1px solid rgba(255,215,0,.25); border-radius:26px; padding:2rem 1.6rem;
 }
-.medal { width:100px; height:100px; border-radius:50%; border:3px solid var(--gold); background:linear-gradient(135deg,#ffd700,#ffb6e6); box-shadow:0 0 20px var(--gold); margin:1rem auto; display:flex; align-items:center; justify-content:center; font-size:2.5rem; }
+.medal { width:110px; height:110px; border-radius:50%; border:3px solid var(--gold); object-fit:cover; box-shadow:0 0 20px var(--gold); margin:1rem auto; display:block; }
 .btn { display:inline-block; margin:.4rem; padding:14px 30px; border-radius:40px; text-decoration:none; font-weight:600; }
 .btn-g { background:linear-gradient(135deg,#ffd700,#ffaa00); color:#301934; }
 .btn-o { background:transparent; color:#fff; border:1px solid var(--gold); }
@@ -116,7 +117,7 @@ p { font-size:1.15rem; line-height:1.7; }
   <div class="content obs glass">
     <h1>Edelweiss</h1>
     <h2>Cumple 4 Años</h2>
-    <div class="medal">👑</div>
+    <img src="../IMG_9502.jpeg" alt="Medalla" class="medal">
     <p>Viernes, 15 de Noviembre · 17:00 h<br>El Gran Castillo</p>
     <div style="margin-top:1.5rem;">
       <a href="URL_GOOGLE_MAPS" class="btn btn-o" target="_blank">📍 Mapa</a>
