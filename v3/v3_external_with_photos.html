@@ -61,10 +61,10 @@ p { font-size:1.15rem; line-height:1.7; }
 </head>
 <body>
 <canvas id="particles"></canvas>
-<button id="sound">🔇</button>
+<button id="sound">🔊</button>
 
 <div id="video-stage">
-  <video id="main-video" autoplay muted playsinline loop>
+  <video id="main-video" autoplay playsinline loop>
     <source src="4974524d-7173-462d-b077-a033334dec92.mp4" type="video/mp4">
   </video>
   <div class="video-overlay">
@@ -89,7 +89,22 @@ p { font-size:1.15rem; line-height:1.7; }
 <script>
 const video = document.getElementById('main-video');
 const soundBtn = document.getElementById('sound');
-let unmuted = false;
+let unmuted = true;
+
+function tryPlayWithSound() {
+  video.muted = false;
+  video.volume = 0.7;
+  video.play().then(() => {
+    soundBtn.textContent = '🔊';
+    unmuted = true;
+  }).catch(() => {
+    video.muted = true;
+    video.play();
+    soundBtn.textContent = '🔇';
+    unmuted = false;
+  });
+}
+tryPlayWithSound();
 
 soundBtn.onclick = () => {
   if (unmuted) { video.muted = true; soundBtn.textContent = '🔇'; }
