@@ -28,9 +28,12 @@
         .btn-whatsapp { background: linear-gradient(45deg, #25D366, #128C7E); color: white; border: none; box-shadow: 0 5px 15px rgba(37,211,102,0.4); }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .choices { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 20px; }
-        .choice { font-size: 2.5rem; cursor: pointer; transition: transform 0.2s; }
-        .choice:hover { transform: scale(1.2); }
+        .game-area { margin: 15px 0; text-align: center; }
+        .castle { font-size: 4rem; margin: 10px 0; border: 2px dashed rgba(255,215,0,0.5); border-radius: 20px; padding: 10px 30px; display: inline-block; transition: all 0.3s; }
+        .castle.ready { border-color: #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.6); }
+        .items { display: flex; gap: 20px; justify-content: center; margin: 15px 0; }
+        .item { font-size: 2.8rem; cursor: grab; user-select: none; transition: transform 0.2s; }
+        .item:active { cursor: grabbing; transform: scale(1.2); }
         .message { font-size: 1.3rem; margin: 15px 0; min-height: 40px; }
     </style>
 </head>
@@ -39,14 +42,17 @@
     <canvas id="magic-dust"></canvas>
     <canvas id="snow"></canvas>
     <div id="splash">
-        <h1 style="margin-bottom: 20px; font-size: 2.4rem; text-align:center; padding: 0 20px;">Por Decreto del Reino Encantado</h1>
-        <p style="font-size: 1.2rem; margin-bottom: 10px;">¡Adivina cuántos años cumple Edelweiss!</p>
-        <div class="choices" id="choices">
-            <span class="choice" data-age="3">3🌸</span>
-            <span class="choice" data-age="4">4👑</span>
-            <span class="choice" data-age="5">5✨</span>
+        <h1 style="margin-bottom: 10px; font-size: 2.2rem; text-align:center; padding: 0 20px;">Por Decreto del Reino Encantado</h1>
+        <p style="font-size: 1.1rem;">¡Arrastra o toca las estrellas al castillo!</p>
+        <div class="game-area">
+            <div class="castle" id="castle">🏰</div>
+            <div class="items" id="items">
+                <span class="item" data-ok="1">✨</span>
+                <span class="item" data-ok="1">🌟</span>
+                <span class="item" data-ok="0">👑</span>
+            </div>
         </div>
-        <div class="message" id="msg"></div>
+        <div class="message" id="msg">Toca las estrellas para ponerlas en el castillo</div>
         <button class="btn-portal" id="enter-btn" style="display:none;" onclick="enterRealm()">✨ Entrar al Reino ✨</button>
     </div>
     <div id="main-content">
@@ -75,34 +81,57 @@
         function tryPlay() { audio.volume = 0.5; audio.play().catch(() => {}); }
         tryPlay();
 
-        // Mini-juego adivinanza
-        document.querySelectorAll('.choice').forEach(el => {
-            el.onclick = () => {
-                const age = el.dataset.age;
-                const msg = document.getElementById('msg');
-                if (age === '4') {
-                    msg.textContent = '¡Correcto! 🎉 ¡Edelweiss cumple 4 años!';
-                    document.getElementById('enter-btn').style.display = 'inline-block';
-                    // Efectos de sorpresa
-                    for (let i = 0; i < 30; i++) {
-                        setTimeout(() => {
-                            const star = document.createElement('div');
-                            star.textContent = '✨';
-                            star.style.position = 'fixed';
-                            star.style.left = Math.random() * 100 + 'vw';
-                            star.style.top = '-20px';
-                            star.style.fontSize = '2rem';
-                            star.style.zIndex = '100';
-                            star.style.animation = 'fall 2s linear forwards';
-                            document.body.appendChild(star);
-                            setTimeout(() => star.remove(), 2000);
-                        }, i * 50);
+        let collected = 0;
+        const needed = 2;
+        const castle = document.getElementById('castle');
+        const msg = document.getElementById('msg');
+
+        // Juego de tocar/arrastrar (touch-friendly)
+        document.querySelectorAll('.item').forEach(item => {
+            item.onclick = () => {
+                if (item.dataset.ok === '1') {
+                    item.style.transform = 'scale(0)';
+                    item.style.opacity = '0';
+                    setTimeout(() => item.style.display = 'none', 300);
+                    collected++;
+                    burstStars();
+                    if (collected >= needed) {
+                        castle.classList.add('ready');
+                        msg.textContent = '¡Magia completa! 🎉 El castillo brilla';
+                        document.getElementById('enter-btn').style.display = 'inline-block';
+                        bigCelebration();
+                    } else {
+                        msg.textContent = '¡Bien! Falta una estrella más';
                     }
                 } else {
-                    msg.textContent = '¡Inténtalo otra vez! 😊';
+                    msg.textContent = 'Esa es la corona, toca las estrellas ✨';
+                    item.style.transform = 'scale(1.3) rotate(20deg)';
+                    setTimeout(() => item.style.transform = '', 300);
                 }
             };
         });
+
+        function burstStars() {
+            for (let i = 0; i < 12; i++) {
+                const s = document.createElement('div');
+                s.textContent = '✨';
+                s.style.cssText = `position:fixed; left:${Math.random()*100}vw; top:50%; font-size:1.8rem; z-index:100; animation:pop 0.8s ease-out forwards; pointer-events:none;`;
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 800);
+            }
+        }
+
+        function bigCelebration() {
+            for (let i = 0; i < 40; i++) {
+                setTimeout(() => {
+                    const s = document.createElement('div');
+                    s.textContent = ['✨','🌟','🎉'][i%3];
+                    s.style.cssText = `position:fixed; left:${Math.random()*100}vw; top:-20px; font-size:${1.5+Math.random()}rem; z-index:100; animation:fall 2.2s linear forwards; pointer-events:none;`;
+                    document.body.appendChild(s);
+                    setTimeout(() => s.remove(), 2200);
+                }, i * 40);
+            }
+        }
 
         function enterRealm() {
             const splash = document.getElementById('splash');
@@ -122,48 +151,38 @@
         const sctx = snowCanvas.getContext('2d');
         function snowResize() { snowCanvas.width = innerWidth; snowCanvas.height = innerHeight; }
         addEventListener('resize', snowResize); snowResize();
-        let flakes = [];
-        for (let i = 0; i < 80; i++) {
-            flakes.push({ x: Math.random() * snowCanvas.width, y: Math.random() * snowCanvas.height, r: Math.random() * 3 + 1, s: Math.random() * 1 + 0.5 });
-        }
+        let flakes = Array.from({length:80}, () => ({ x: Math.random()*snowCanvas.width, y: Math.random()*snowCanvas.height, r: Math.random()*3+1, s: Math.random()*1+0.5 }));
         function drawSnow() {
-            sctx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+            sctx.clearRect(0,0,snowCanvas.width,snowCanvas.height);
             sctx.fillStyle = 'rgba(255,255,255,0.8)';
             flakes.forEach(f => {
-                sctx.beginPath();
-                sctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-                sctx.fill();
-                f.y += f.s;
-                if (f.y > snowCanvas.height) f.y = -5;
+                sctx.beginPath(); sctx.arc(f.x, f.y, f.r, 0, Math.PI*2); sctx.fill();
+                f.y += f.s; if (f.y > snowCanvas.height) f.y = -5;
             });
             requestAnimationFrame(drawSnow);
         }
         drawSnow();
 
-        // Partículas doradas (existentes)
+        // Partículas doradas
         const canvas = document.getElementById('magic-dust');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize); resize();
-        window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
-        window.addEventListener('touchmove', (e) => { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; });
+        window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+        window.addEventListener('touchmove', e => { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; });
         class Particle {
             constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedY = Math.random() * -1 - 0.5;
-                this.speedX = (Math.random() - 0.5) * 1;
-                this.alpha = Math.random() * 0.5 + 0.3;
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5; this.speedY = Math.random() * -1 - 0.5;
+                this.speedX = (Math.random() - 0.5) * 1; this.alpha = Math.random() * 0.5 + 0.3;
             }
             update() {
                 this.y += this.speedY; this.x += this.speedX;
                 const dx = mouseX - this.x, dy = mouseY - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 100) { this.x -= dx * 0.02; this.y -= dy * 0.02; this.alpha = 1; }
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 100) { this.x -= dx * 0.02; this.y -= dy * 0.02; this.alpha = 1; }
                 else this.alpha = Math.max(0.2, this.alpha - 0.01);
                 if (this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; }
             }
@@ -180,9 +199,9 @@
         }
         animate();
 
-        // Animación de caída para estrellas
         const style = document.createElement('style');
-        style.textContent = '@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }';
+        style.textContent = `@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+@keyframes pop { 0% { transform: scale(0.5); opacity:1; } 100% { transform: scale(1.5) translateY(-40px); opacity:0; } }`;
         document.head.appendChild(style);
     </script>
 </body>
