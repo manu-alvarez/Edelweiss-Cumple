@@ -58,12 +58,21 @@
         </div>
     </div>
     <script>
+        const audio = document.getElementById('bg-music');
+        // Intentar reproducir con sonido desde el primer momento
+        function tryPlay() {
+            audio.volume = 0.5;
+            audio.play().catch(() => {
+                // Si se bloquea, se activará al pulsar el botón
+            });
+        }
+        tryPlay();
+
         function enterRealm() {
             const splash = document.getElementById('splash');
             const main = document.getElementById('main-content');
-            const audio = document.getElementById('bg-music');
             audio.volume = 0.5;
-            audio.play().catch(e => console.log("Audio autoplay bloqueado, requiere interacción."));
+            audio.play().catch(() => {});
             splash.style.opacity = '0';
             setTimeout(() => {
                 splash.style.display = 'none';
