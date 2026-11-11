@@ -20,7 +20,6 @@
             pointer-events: none;
         }
         @keyframes bgShift { 0% { opacity: 0.75; transform: scale(1.1); } 100% { opacity: 0.9; transform: scale(1.15); } }
-        #sound-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; backdrop-filter: blur(5px); }
         #snow { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
         #cover {
             position: fixed; inset: 0; z-index: 200;
@@ -54,11 +53,6 @@
     </style>
 </head>
 <body>
-    <button id="sound-btn">🔊</button>
-    <audio id="story-audio" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-        <source src="https://cdn.pixabay.com/download/audio/2021/11/24/audio_341edbf497.mp3" type="audio/mpeg">
-    </audio>
     <audio id="sfx-tap" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3"></audio>
     <audio id="sfx-success" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b7bf2.mp3"></audio>
     <canvas id="snow"></canvas>
@@ -108,65 +102,8 @@
         </div>
     </section>
     <script>
-        const soundBtn = document.getElementById('sound-btn');
-        const audio = document.getElementById('story-audio');
         const sfxTap = document.getElementById('sfx-tap');
         const sfxSuccess = document.getElementById('sfx-success');
-        let isPlaying = false;
-        let ambientNode = null;
-
-        function startAmbientFallback() {
-            if (ambientNode) return;
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(220, ctx.currentTime);
-                gain.gain.setValueAtTime(0.04, ctx.currentTime);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                ambientNode = { osc, gain, ctx };
-                soundBtn.textContent = '🔊';
-                isPlaying = true;
-            } catch (e) {}
-        }
-
-        function stopAmbientFallback() {
-            if (ambientNode) {
-                ambientNode.osc.stop();
-                ambientNode = null;
-            }
-        }
-
-        function startAudio() {
-            audio.volume = 0.5;
-            audio.play().then(() => {
-                soundBtn.textContent = '🔊';
-                isPlaying = true;
-                stopAmbientFallback();
-            }).catch(() => {
-                startAmbientFallback();
-            });
-        }
-
-        startAudio();
-        document.body.addEventListener('pointerdown', function once() {
-            if (!isPlaying) startAudio();
-            document.body.removeEventListener('pointerdown', once);
-        }, { once: true });
-
-        soundBtn.onclick = () => {
-            if (isPlaying) {
-                audio.pause();
-                stopAmbientFallback();
-                soundBtn.textContent = '🔇';
-                isPlaying = false;
-            } else {
-                startAudio();
-            }
-        };
 
         function playTap() { sfxTap.currentTime = 0; sfxTap.volume = 0.6; sfxTap.play().catch(() => {}); }
         function playSuccess() { sfxSuccess.currentTime = 0; sfxSuccess.volume = 0.7; sfxSuccess.play().catch(() => {}); }
@@ -227,7 +164,6 @@
         function startStory() {
             playSuccess();
             document.getElementById('cover').classList.add('hidden');
-            if (!isPlaying) startAudio();
         }
 
         const snow = document.getElementById('snow');
