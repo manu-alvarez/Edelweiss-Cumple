@@ -30,7 +30,7 @@
     </style>
 </head>
 <body>
-    <button id="sound-btn">🔇</button>
+    <button id="sound-btn">🔊</button>
     <audio id="story-audio" src="https://cdn.pixabay.com/download/audio/2021/11/24/audio_341edbf497.mp3?filename=magical-forest-9307.mp3" loop></audio>
     <section class="section">
         <img src="bg1.jpg" class="bg-layer filter-dark scroll-bg" alt="Fondo">
@@ -66,7 +66,21 @@
     <script>
         const soundBtn = document.getElementById('sound-btn');
         const audio = document.getElementById('story-audio');
-        let isPlaying = false;
+        let isPlaying = true;
+
+        // Intentar reproducir con sonido desde el primer momento
+        function tryPlay() {
+            audio.volume = 0.4;
+            audio.play().then(() => {
+                soundBtn.textContent = '🔊';
+                isPlaying = true;
+            }).catch(() => {
+                soundBtn.textContent = '🔇';
+                isPlaying = false;
+            });
+        }
+        tryPlay();
+
         soundBtn.addEventListener('click', () => {
             if (isPlaying) {
                 audio.pause();
