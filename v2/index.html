@@ -30,10 +30,13 @@
         .btn-primary { background: var(--gold); color: var(--dark); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
         .btn-secondary { background: transparent; color: white; border: 1px solid var(--gold); backdrop-filter: blur(10px); }
         .btn:active { transform: scale(0.95); }
-        .choices { display: flex; gap: 15px; margin: 20px 0; }
-        .choice { font-size: 2.8rem; cursor: pointer; transition: transform 0.2s; }
-        .choice:hover { transform: scale(1.15); }
-        .msg { min-height: 40px; font-size: 1.3rem; margin: 10px 0; }
+        .game { text-align: center; margin: 15px 0; }
+        .castle { font-size: 4rem; border: 2px dashed rgba(212,175,55,0.5); border-radius: 20px; padding: 10px 25px; display: inline-block; transition: all 0.3s; }
+        .castle.ready { border-color: #d4af37; box-shadow: 0 0 25px rgba(212,175,55,0.6); }
+        .items { display: flex; gap: 22px; justify-content: center; margin: 15px 0; }
+        .item { font-size: 2.8rem; cursor: pointer; user-select: none; transition: transform 0.2s; }
+        .item:active { transform: scale(1.2); }
+        .msg { min-height: 40px; font-size: 1.25rem; margin: 10px 0; }
         .enter-btn { background: linear-gradient(135deg, #d4af37, #ffaa00); border: none; padding: 16px 40px; border-radius: 40px; font-size: 1.2rem; font-weight: 700; color: #0a0a0a; cursor: pointer; margin-top: 15px; display: none; }
     </style>
 </head>
@@ -43,14 +46,17 @@
     <canvas id="snow"></canvas>
 
     <div id="cover">
-        <h2 style="font-size: 2rem; margin-bottom: 10px;">El Cuento de Edelweiss</h2>
-        <p>¿Cuántos años cumple la princesa?</p>
-        <div class="choices">
-            <span class="choice" data-a="3">3🌸</span>
-            <span class="choice" data-a="4">4👑</span>
-            <span class="choice" data-a="5">5✨</span>
+        <h2 style="font-size: 1.8rem; margin-bottom: 8px;">El Cuento de Edelweiss</h2>
+        <p>Toca las estrellas para ponerlas en el castillo</p>
+        <div class="game">
+            <div class="castle" id="castle">🏰</div>
+            <div class="items">
+                <span class="item" data-ok="1">✨</span>
+                <span class="item" data-ok="1">🌟</span>
+                <span class="item" data-ok="0">👑</span>
+            </div>
         </div>
-        <div class="msg" id="msg"></div>
+        <div class="msg" id="msg">¡Toca las estrellas!</div>
         <button class="enter-btn" id="enter" onclick="startStory()">✨ Empezar el Cuento ✨</button>
     </div>
 
@@ -101,18 +107,55 @@
             isPlaying = !isPlaying;
         };
 
-        // Mini-juego
-        document.querySelectorAll('.choice').forEach(el => {
-            el.onclick = () => {
-                const msg = document.getElementById('msg');
-                if (el.dataset.a === '4') {
-                    msg.textContent = '¡Sí! 🎉 Cumple 4 años';
-                    document.getElementById('enter').style.display = 'inline-block';
+        let collected = 0;
+        const castle = document.getElementById('castle');
+        const msg = document.getElementById('msg');
+
+        document.querySelectorAll('.item').forEach(item => {
+            item.onclick = () => {
+                if (item.dataset.ok === '1') {
+                    item.style.transform = 'scale(0)';
+                    item.style.opacity = '0';
+                    setTimeout(() => item.style.display = 'none', 300);
+                    collected++;
+                    burst();
+                    if (collected >= 2) {
+                        castle.classList.add('ready');
+                        msg.textContent = '¡Magia lista! 🎉';
+                        document.getElementById('enter').style.display = 'inline-block';
+                        celebrate();
+                    } else {
+                        msg.textContent = '¡Bien! Una más';
+                    }
                 } else {
-                    msg.textContent = '¡Prueba otra vez!';
+                    msg.textContent = 'Toca las estrellas ✨';
+                    item.style.transform = 'scale(1.3) rotate(15deg)';
+                    setTimeout(() => item.style.transform = '', 250);
                 }
             };
         });
+
+        function burst() {
+            for (let i = 0; i < 10; i++) {
+                const s = document.createElement('div');
+                s.textContent = '✨';
+                s.style.cssText = `position:fixed; left:${Math.random()*100}vw; top:45%; font-size:1.6rem; z-index:300; animation:pop .7s ease-out forwards; pointer-events:none;`;
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 700);
+            }
+        }
+
+        function celebrate() {
+            for (let i = 0; i < 35; i++) {
+                setTimeout(() => {
+                    const s = document.createElement('div');
+                    s.textContent = ['✨','🌟','🎉'][i%3];
+                    s.style.cssText = `position:fixed; left:${Math.random()*100}vw; top:-20px; font-size:${1.4+Math.random()}rem; z-index:300; animation:fall 2s linear forwards; pointer-events:none;`;
+                    document.body.appendChild(s);
+                    setTimeout(() => s.remove(), 2000);
+                }, i * 35);
+            }
+        }
 
         function startStory() {
             document.getElementById('cover').classList.add('hidden');
@@ -124,7 +167,7 @@
         const sctx = snow.getContext('2d');
         function snowR() { snow.width = innerWidth; snow.height = innerHeight; }
         addEventListener('resize', snowR); snowR();
-        let flakes = Array.from({length: 70}, () => ({ x: Math.random()*snow.width, y: Math.random()*snow.height, r: Math.random()*2.5+1, s: Math.random()+0.4 }));
+        let flakes = Array.from({length:70}, () => ({ x: Math.random()*snow.width, y: Math.random()*snow.height, r: Math.random()*2.5+1, s: Math.random()+0.4 }));
         function snowLoop() {
             sctx.clearRect(0,0,snow.width,snow.height);
             sctx.fillStyle = 'rgba(255,255,255,0.75)';
@@ -147,6 +190,11 @@
             entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
         }, { threshold: 0.3 });
         document.querySelectorAll('.observer-target').forEach(t => observer.observe(t));
+
+        const style = document.createElement('style');
+        style.textContent = `@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+@keyframes pop { 0% { transform: scale(0.4); opacity:1; } 100% { transform: scale(1.4) translateY(-30px); opacity:0; } }`;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
