@@ -56,11 +56,11 @@
 <body>
     <button id="sound-btn">🔊</button>
     <audio id="story-audio" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2021/11/24/audio_341edbf497.mp3?filename=magical-forest-9307.mp3" type="audio/mpeg">
-        <source src="https://assets.mixkit.co/music/preview/mixkit-magical-forest-ambience-1220.mp3" type="audio/mpeg">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        <source src="https://cdn.pixabay.com/download/audio/2021/11/24/audio_341edbf497.mp3" type="audio/mpeg">
     </audio>
-    <audio id="sfx-tap" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3?filename=magic-spell-6005.mp3"></audio>
-    <audio id="sfx-success" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b7bf2.mp3?filename=success-1-6297.mp3"></audio>
+    <audio id="sfx-tap" src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_12b0c7443c.mp3"></audio>
+    <audio id="sfx-success" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_115b9b7bf2.mp3"></audio>
     <canvas id="snow"></canvas>
 
     <div id="cover">
@@ -113,36 +113,58 @@
         const sfxTap = document.getElementById('sfx-tap');
         const sfxSuccess = document.getElementById('sfx-success');
         let isPlaying = false;
+        let ambientNode = null;
+
+        function startAmbientFallback() {
+            if (ambientNode) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, ctx.currentTime);
+                gain.gain.setValueAtTime(0.04, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                ambientNode = { osc, gain, ctx };
+                soundBtn.textContent = '🔊';
+                isPlaying = true;
+            } catch (e) {}
+        }
+
+        function stopAmbientFallback() {
+            if (ambientNode) {
+                ambientNode.osc.stop();
+                ambientNode = null;
+            }
+        }
 
         function startAudio() {
-            audio.volume = 0.45;
+            audio.volume = 0.5;
             audio.play().then(() => {
                 soundBtn.textContent = '🔊';
                 isPlaying = true;
+                stopAmbientFallback();
             }).catch(() => {
-                soundBtn.textContent = '🔇';
-                isPlaying = false;
+                startAmbientFallback();
             });
         }
 
-        // Intentar al cargar y también en la primera interacción
         startAudio();
-        document.body.addEventListener('click', function once() {
+        document.body.addEventListener('pointerdown', function once() {
             if (!isPlaying) startAudio();
-            document.body.removeEventListener('click', once);
+            document.body.removeEventListener('pointerdown', once);
         }, { once: true });
 
         soundBtn.onclick = () => {
             if (isPlaying) {
                 audio.pause();
+                stopAmbientFallback();
                 soundBtn.textContent = '🔇';
                 isPlaying = false;
             } else {
-                audio.volume = 0.45;
-                audio.play().then(() => {
-                    soundBtn.textContent = '🔊';
-                    isPlaying = true;
-                }).catch(() => {});
+                startAudio();
             }
         };
 
