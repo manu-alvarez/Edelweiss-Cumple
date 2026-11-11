@@ -9,6 +9,9 @@
         :root { --gold: #d4af37; --dark: #0a0a0a; }
         body, html { margin: 0; padding: 0; background-color: var(--dark); color: white; font-family: 'Quicksand', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
         #sound-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; backdrop-filter: blur(5px); }
+        #snow { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+        #cover { position: fixed; inset: 0; z-index: 200; background: radial-gradient(ellipse at center, #1a0a2e 0%, #0a0a0a 70%); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1.5s; }
+        #cover.hidden { opacity: 0; pointer-events: none; }
         .section { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .bg-layer { position: absolute; top: -10%; left: -10%; width: 120%; height: 120%; object-fit: cover; z-index: 1; transition: transform 0.1s ease-out; opacity: 0.4; }
         .filter-dark { filter: brightness(0.3) sepia(0.2) hue-rotate(-20deg); }
@@ -27,11 +30,30 @@
         .btn-primary { background: var(--gold); color: var(--dark); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
         .btn-secondary { background: transparent; color: white; border: 1px solid var(--gold); backdrop-filter: blur(10px); }
         .btn:active { transform: scale(0.95); }
+        .choices { display: flex; gap: 15px; margin: 20px 0; }
+        .choice { font-size: 2.8rem; cursor: pointer; transition: transform 0.2s; }
+        .choice:hover { transform: scale(1.15); }
+        .msg { min-height: 40px; font-size: 1.3rem; margin: 10px 0; }
+        .enter-btn { background: linear-gradient(135deg, #d4af37, #ffaa00); border: none; padding: 16px 40px; border-radius: 40px; font-size: 1.2rem; font-weight: 700; color: #0a0a0a; cursor: pointer; margin-top: 15px; display: none; }
     </style>
 </head>
 <body>
     <button id="sound-btn">🔊</button>
     <audio id="story-audio" src="https://cdn.pixabay.com/download/audio/2021/11/24/audio_341edbf497.mp3?filename=magical-forest-9307.mp3" loop></audio>
+    <canvas id="snow"></canvas>
+
+    <div id="cover">
+        <h2 style="font-size: 2rem; margin-bottom: 10px;">El Cuento de Edelweiss</h2>
+        <p>¿Cuántos años cumple la princesa?</p>
+        <div class="choices">
+            <span class="choice" data-a="3">3🌸</span>
+            <span class="choice" data-a="4">4👑</span>
+            <span class="choice" data-a="5">5✨</span>
+        </div>
+        <div class="msg" id="msg"></div>
+        <button class="enter-btn" id="enter" onclick="startStory()">✨ Empezar el Cuento ✨</button>
+    </div>
+
     <section class="section">
         <img src="bg1.jpg" class="bg-layer filter-dark scroll-bg" alt="Fondo">
         <div class="content observer-target">
@@ -67,51 +89,64 @@
         const soundBtn = document.getElementById('sound-btn');
         const audio = document.getElementById('story-audio');
         let isPlaying = true;
-
-        // Intentar reproducir con sonido desde el primer momento
         function tryPlay() {
             audio.volume = 0.4;
-            audio.play().then(() => {
-                soundBtn.textContent = '🔊';
-                isPlaying = true;
-            }).catch(() => {
-                soundBtn.textContent = '🔇';
-                isPlaying = false;
-            });
+            audio.play().then(() => { soundBtn.textContent = '🔊'; isPlaying = true; })
+                         .catch(() => { soundBtn.textContent = '🔇'; isPlaying = false; });
         }
         tryPlay();
-
-        soundBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                audio.pause();
-                soundBtn.textContent = '🔇';
-            } else {
-                audio.volume = 0.4;
-                audio.play();
-                soundBtn.textContent = '🔊';
-            }
+        soundBtn.onclick = () => {
+            if (isPlaying) { audio.pause(); soundBtn.textContent = '🔇'; }
+            else { audio.volume = 0.4; audio.play(); soundBtn.textContent = '🔊'; }
             isPlaying = !isPlaying;
+        };
+
+        // Mini-juego
+        document.querySelectorAll('.choice').forEach(el => {
+            el.onclick = () => {
+                const msg = document.getElementById('msg');
+                if (el.dataset.a === '4') {
+                    msg.textContent = '¡Sí! 🎉 Cumple 4 años';
+                    document.getElementById('enter').style.display = 'inline-block';
+                } else {
+                    msg.textContent = '¡Prueba otra vez!';
+                }
+            };
         });
+
+        function startStory() {
+            document.getElementById('cover').classList.add('hidden');
+            audio.play().catch(() => {});
+        }
+
+        // Nieve
+        const snow = document.getElementById('snow');
+        const sctx = snow.getContext('2d');
+        function snowR() { snow.width = innerWidth; snow.height = innerHeight; }
+        addEventListener('resize', snowR); snowR();
+        let flakes = Array.from({length: 70}, () => ({ x: Math.random()*snow.width, y: Math.random()*snow.height, r: Math.random()*2.5+1, s: Math.random()+0.4 }));
+        function snowLoop() {
+            sctx.clearRect(0,0,snow.width,snow.height);
+            sctx.fillStyle = 'rgba(255,255,255,0.75)';
+            flakes.forEach(f => {
+                sctx.beginPath(); sctx.arc(f.x, f.y, f.r, 0, Math.PI*2); sctx.fill();
+                f.y += f.s; if (f.y > snow.height) f.y = -5;
+            });
+            requestAnimationFrame(snowLoop);
+        }
+        snowLoop();
+
         const bgLayers = document.querySelectorAll('.scroll-bg');
         window.addEventListener('scroll', () => {
             const scroll = window.scrollY;
             requestAnimationFrame(() => {
-                bgLayers.forEach(layer => {
-                    layer.style.transform = `translateY(${scroll * 0.25}px)`;
-                });
+                bgLayers.forEach(layer => { layer.style.transform = `translateY(${scroll * 0.25}px)`; });
             });
         });
-        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.3 };
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-        document.querySelectorAll('.observer-target').forEach(target => {
-            observer.observe(target);
-        });
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.3 });
+        document.querySelectorAll('.observer-target').forEach(t => observer.observe(t));
     </script>
 </body>
 </html>
