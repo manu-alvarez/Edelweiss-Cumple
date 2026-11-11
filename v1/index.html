@@ -1,1 +1,131 @@
-See /tmp/edelweiss-repo/v1/index.html for the full self-contained invitation
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Invitación Real: Edelweiss cumple 4!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #ffd700; --lavender: #301934; --pink: #ffb6c1; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #0b0510; font-family: 'Fredoka', sans-serif; color: white; overflow-x: hidden; }
+        #magic-dust { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #2a0845 0%, #0b0510 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 50; transition: opacity 1.5s ease; }
+        .btn-portal { background: linear-gradient(45deg, var(--gold), #ffaa00); border: none; padding: 20px 40px; border-radius: 50px; font-size: 1.5rem; color: #301934; font-weight: 600; cursor: pointer; box-shadow: 0 0 30px rgba(255,215,0,0.5); transition: transform 0.3s, box-shadow 0.3s; animation: pulse 2s infinite; font-family: 'Fredoka', sans-serif; }
+        .btn-portal:hover { transform: scale(1.05); box-shadow: 0 0 50px rgba(255,215,0,0.8); }
+        #main-content { position: relative; z-index: 10; display: none; flex-direction: column; align-items: center; padding: 40px 20px; opacity: 0; transition: opacity 2s ease; }
+        .glass-card { background: rgba(48, 25, 52, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 30px; padding: 40px 30px; text-align: center; max-width: 500px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05); animation: float 6s ease-in-out infinite; }
+        .hero-img-container { width: 100%; height: 250px; margin-bottom: 20px; -webkit-mask-image: radial-gradient(ellipse, black 40%, transparent 70%); mask-image: radial-gradient(ellipse, black 40%, transparent 70%); }
+        .hero-img-container img { width: 100%; height: 100%; object-fit: cover; filter: drop-shadow(0 0 15px var(--gold)) contrast(1.1) brightness(1.1); }
+        .medallion { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover; box-shadow: 0 0 20px var(--gold); margin: 20px 0; }
+        h1 { font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: var(--gold); margin: 0; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
+        h2 { font-size: 1.5rem; color: var(--pink); font-weight: 400; margin: 10px 0 30px; }
+        .details p { font-size: 1.2rem; margin: 15px 0; line-height: 1.6; }
+        .highlight { color: var(--gold); font-weight: 600; }
+        .actions { display: flex; flex-direction: column; gap: 15px; margin-top: 30px; }
+        .btn-action { display: block; padding: 15px; border-radius: 25px; text-decoration: none; font-weight: 600; font-size: 1.1rem; text-transform: uppercase; transition: all 0.3s; }
+        .btn-maps { background: rgba(255,255,255,0.1); color: white; border: 1px solid white; backdrop-filter: blur(5px); }
+        .btn-whatsapp { background: linear-gradient(45deg, #25D366, #128C7E); color: white; border: none; box-shadow: 0 5px 15px rgba(37,211,102,0.4); }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/01/21/audio_31743c58bc.mp3?filename=fairy-tale-magic-7306.mp3" loop></audio>
+    <canvas id="magic-dust"></canvas>
+    <div id="splash">
+        <h1 style="margin-bottom: 40px; font-size: 2.5rem; text-align:center; padding: 0 20px;">Por Decreto del Reino Encantado</h1>
+        <button class="btn-portal" onclick="enterRealm()">✨ Entrar al Reino ✨</button>
+    </div>
+    <div id="main-content">
+        <div class="glass-card">
+            <div class="hero-img-container">
+                <img src="Photo_20261111-094353.jpg" alt="Castillo de Princesas">
+            </div>
+            <h1>Edelweiss</h1>
+            <h2>¡Cumple 4 años!</h2>
+            <p style="font-style: italic; color: #ddd; margin-bottom: 25px;">Las princesas, guardianes y criaturas mágicas están convocados a una aventura inolvidable.</p>
+            <div class="details">
+                <p>📅 <span class="highlight">Viernes, 15 de Noviembre</span></p>
+                <p>⏰ <span class="highlight">17:00 h</span></p>
+                <p>🏰 <span class="highlight">El Gran Castillo</span></p>
+                <p>👑 <span style="font-size: 1rem;">Princesas, guardianes o aventureros</span></p>
+            </div>
+            <img src="Photo_20261111-094353_4.jpg" alt="Guardianes y Princesas" class="medallion">
+            <div class="actions">
+                <a href="URL_GOOGLE_MAPS" class="btn-action btn-maps" target="_blank">📍 Abrir Mapa del Reino</a>
+                <a href="https://wa.me/NUMERO_WHATSAPP?text=¡Hola!%20Confirmo%20mi%20asistencia%20al%20cumpleaños%20mágico%20de%20Edelweiss%20👑✨" class="btn-action btn-whatsapp" target="_blank">💌 Confirmar Asistencia</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function enterRealm() {
+            const splash = document.getElementById('splash');
+            const main = document.getElementById('main-content');
+            const audio = document.getElementById('bg-music');
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log("Audio autoplay bloqueado, requiere interacción."));
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+                main.style.display = 'flex';
+                void main.offsetWidth;
+                main.style.opacity = '1';
+            }, 1000);
+        }
+        const canvas = document.getElementById('magic-dust');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+        window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+        window.addEventListener('touchmove', (e) => { mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY; });
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedY = Math.random() * -1 - 0.5;
+                this.speedX = (Math.random() - 0.5) * 1;
+                this.alpha = Math.random() * 0.5 + 0.3;
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 100) {
+                    this.x -= dx * 0.02;
+                    this.y -= dy * 0.02;
+                    this.alpha = 1;
+                } else {
+                    this.alpha = Math.max(0.2, this.alpha - 0.01);
+                }
+                if (this.y < 0) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 215, 0, ${this.alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        for(let i = 0; i < 150; i++) particles.push(new Particle());
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>

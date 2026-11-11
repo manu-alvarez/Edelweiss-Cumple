@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Cuento de Edelweiss</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #d4af37; --dark: #0a0a0a; }
+        body, html { margin: 0; padding: 0; background-color: var(--dark); color: white; font-family: 'Quicksand', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+        #sound-btn { position: fixed; top: 20px; right: 20px; z-index: 100; background: rgba(0,0,0,0.5); border: 1px solid var(--gold); color: var(--gold); border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer; backdrop-filter: blur(5px); }
+        .section { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .bg-layer { position: absolute; top: -10%; left: -10%; width: 120%; height: 120%; object-fit: cover; z-index: 1; transition: transform 0.1s ease-out; opacity: 0.4; }
+        .filter-dark { filter: brightness(0.3) sepia(0.2) hue-rotate(-20deg); }
+        .filter-blur { filter: blur(8px) brightness(0.4) saturate(1.5); }
+        .content { position: relative; z-index: 10; text-align: center; padding: 40px; max-width: 600px; opacity: 0; transform: translateY(50px); transition: all 1s cubic-bezier(0.25, 1, 0.5, 1); }
+        .content.visible { opacity: 1; transform: translateY(0); }
+        h1, h2 { font-family: 'Cinzel', serif; color: var(--gold); text-shadow: 0 4px 15px rgba(0,0,0,0.8); }
+        h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin-bottom: 10px; }
+        h2 { font-size: clamp(1.5rem, 5vw, 2rem); letter-spacing: 2px; }
+        p { font-size: 1.2rem; line-height: 1.8; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        .collage-container { display: flex; gap: 10px; padding: 20px; background: rgba(0,0,0,0.8); border-radius: 15px; margin: 30px 0; border: 1px solid rgba(212, 175, 55, 0.3); }
+        .collage-container img { width: 50%; border-radius: 10px; object-fit: cover; filter: brightness(0.8); transition: filter 0.3s; }
+        .collage-container img:hover { filter: brightness(1.2) drop-shadow(0 0 15px var(--gold)); }
+        .btn-wrapper { display: flex; flex-direction: column; gap: 15px; width: 100%; margin-top: 20px; }
+        .btn { padding: 18px 30px; border-radius: 8px; font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.1rem; text-decoration: none; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.2s, box-shadow 0.2s; display: flex; justify-content: center; align-items: center; }
+        .btn-primary { background: var(--gold); color: var(--dark); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+        .btn-secondary { background: transparent; color: white; border: 1px solid var(--gold); backdrop-filter: blur(10px); }
+        .btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+    <button id="sound-btn">🔇</button>
+    <audio id="story-audio" src="https://cdn.pixabay.com/download/audio/2021/11/24/audio_341edbf497.mp3?filename=magical-forest-9307.mp3" loop></audio>
+    <section class="section">
+        <img src="Photo_20261111-094353_2.jpg" class="bg-layer filter-dark scroll-bg" alt="Fondo">
+        <div class="content observer-target">
+            <h2>Había una vez...</h2>
+            <p>En un reino más allá de las nubes y las estrellas, una gran celebración estaba a punto de escribirse en los libros de magia.</p>
+            <span style="display:block; margin-top: 40px; font-size: 2rem;">↓</span>
+        </div>
+    </section>
+    <section class="section">
+        <img src="Photo_20261111-094353_3.jpg" class="bg-layer filter-blur scroll-bg" alt="Fondo desenfocado">
+        <div class="content observer-target">
+            <h1 style="color: #fff;">Edelweiss</h1>
+            <h2>Cumple 4 Años</h2>
+            <p>Las hadas han esparcido su polvo dorado y los guardianes preparan los juegos. Es hora de ponerse la armadura o el vestido de gala.</p>
+        </div>
+    </section>
+    <section class="section" style="background: linear-gradient(to bottom, transparent, #0a0a0a 80%);">
+        <div class="content observer-target" style="width: 100%;">
+            <h2>El Decreto Real</h2>
+            <p style="color: var(--gold); font-size: 1.4rem; font-weight: 600;">Viernes, 15 de Noviembre<br>a las 17:00 h</p>
+            <p>En El Gran Castillo (Nuestra casa)</p>
+            <div class="collage-container">
+                <img src="Photo_20261111-094353_5.jpg" alt="Mural 1">
+                <img src="Photo_20261111-094353_6.jpg" alt="Mural 2">
+            </div>
+            <div class="btn-wrapper">
+                <a href="URL_GOOGLE_MAPS" class="btn btn-secondary" target="_blank">Desplegar el Mapa</a>
+                <a href="https://wa.me/NUMERO_WHATSAPP?text=¡Hola!%20Confirmo%20mi%20asistencia%20al%20cumpleaños%20mágico%20de%20Edelweiss%20👑✨" class="btn btn-primary" target="_blank">Sellar Asistencia</a>
+            </div>
+        </div>
+    </section>
+    <script>
+        const soundBtn = document.getElementById('sound-btn');
+        const audio = document.getElementById('story-audio');
+        let isPlaying = false;
+        soundBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audio.pause();
+                soundBtn.textContent = '🔇';
+            } else {
+                audio.volume = 0.4;
+                audio.play();
+                soundBtn.textContent = '🔊';
+            }
+            isPlaying = !isPlaying;
+        });
+        const bgLayers = document.querySelectorAll('.scroll-bg');
+        window.addEventListener('scroll', () => {
+            const scroll = window.scrollY;
+            requestAnimationFrame(() => {
+                bgLayers.forEach(layer => {
+                    layer.style.transform = `translateY(${scroll * 0.25}px)`;
+                });
+            });
+        });
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.3 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.observer-target').forEach(target => {
+            observer.observe(target);
+        });
+    </script>
+</body>
+</html>
