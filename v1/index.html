@@ -8,16 +8,31 @@
     <style>
         :root { --gold: #ffd700; --lavender: #301934; --pink: #ffb6c1; }
         body, html { margin: 0; padding: 0; height: 100%; background: #0b0510; font-family: 'Fredoka', sans-serif; color: white; overflow-x: hidden; }
+        /* Fondo suave animado tipo imágenes difuminadas */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(255,182,193,0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(212,165,255,0.2) 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 50%, rgba(255,215,0,0.12) 0%, transparent 60%),
+                linear-gradient(160deg, #1a0a2e 0%, #0b0510 50%, #2a0845 100%);
+            animation: bgShift 18s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes bgShift {
+            0% { opacity: 0.85; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
         #magic-dust { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         #snow { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
-        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, #2a0845 0%, #0b0510 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 50; transition: opacity 1.5s ease; }
+        #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 50; transition: opacity 1.5s ease; }
         .btn-portal { background: linear-gradient(45deg, var(--gold), #ffaa00); border: none; padding: 18px 36px; border-radius: 50px; font-size: 1.4rem; color: #301934; font-weight: 600; cursor: pointer; box-shadow: 0 0 30px rgba(255,215,0,0.5); transition: transform 0.3s; animation: pulse 2s infinite; font-family: 'Fredoka', sans-serif; margin: 8px; }
         .btn-portal:hover { transform: scale(1.05); }
         #main-content { position: relative; z-index: 10; display: none; flex-direction: column; align-items: center; padding: 40px 20px; opacity: 0; transition: opacity 2s ease; }
-        .glass-card { background: rgba(48, 25, 52, 0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 30px; padding: 40px 30px; text-align: center; max-width: 500px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: float 6s ease-in-out infinite; }
-        .hero-img-container { width: 100%; height: 250px; margin-bottom: 20px; -webkit-mask-image: radial-gradient(ellipse, black 40%, transparent 70%); mask-image: radial-gradient(ellipse, black 40%, transparent 70%); }
-        .hero-img-container img { width: 100%; height: 100%; object-fit: cover; filter: drop-shadow(0 0 15px var(--gold)) contrast(1.1) brightness(1.1); }
-        .medallion { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover; box-shadow: 0 0 20px var(--gold); margin: 20px 0; }
+        .glass-card { background: rgba(48, 25, 52, 0.45); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 30px; padding: 40px 30px; text-align: center; max-width: 500px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: float 6s ease-in-out infinite; }
+        .hero-placeholder { width: 100%; height: 180px; margin-bottom: 20px; border-radius: 20px; background: linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,182,193,0.25), rgba(212,165,255,0.3)); display: flex; align-items: center; justify-content: center; font-size: 4rem; filter: blur(0.3px); }
+        .medallion { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--gold); background: linear-gradient(135deg, #ffd700, #ffb6c1); box-shadow: 0 0 20px var(--gold); margin: 20px auto; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; }
         h1 { font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: var(--gold); margin: 0; text-shadow: 0 0 20px rgba(255,215,0,0.6); }
         h2 { font-size: 1.5rem; color: var(--pink); font-weight: 400; margin: 10px 0 30px; }
         .details p { font-size: 1.2rem; margin: 15px 0; line-height: 1.6; }
@@ -59,9 +74,7 @@
     </div>
     <div id="main-content">
         <div class="glass-card">
-            <div class="hero-img-container">
-                <img src="hero.jpg" alt="Castillo de Princesas">
-            </div>
+            <div class="hero-placeholder">🏰✨</div>
             <h1>Edelweiss</h1>
             <h2>¡Cumple 4 años!</h2>
             <p style="font-style: italic; color: #ddd; margin-bottom: 25px;">Las princesas, guardianes y criaturas mágicas están convocados a una aventura inolvidable.</p>
@@ -71,7 +84,7 @@
                 <p>🏰 <span class="highlight">El Gran Castillo</span></p>
                 <p>👑 <span style="font-size: 1rem;">Princesas, guardianes o aventureros</span></p>
             </div>
-            <img src="medal.jpg" alt="Guardianes y Princesas" class="medallion">
+            <div class="medallion">👑</div>
             <div class="actions">
                 <a href="URL_GOOGLE_MAPS" class="btn-action btn-maps" target="_blank">📍 Abrir Mapa del Reino</a>
                 <a href="https://wa.me/NUMERO_WHATSAPP?text=¡Hola!%20Confirmo%20mi%20asistencia%20al%20cumpleaños%20mágico%20de%20Edelweiss%20👑✨" class="btn-action btn-whatsapp" target="_blank">💌 Confirmar Asistencia</a>
@@ -156,7 +169,6 @@
             }, 1000);
         }
 
-        // Nieve
         const snowCanvas = document.getElementById('snow');
         const sctx = snowCanvas.getContext('2d');
         function snowResize() { snowCanvas.width = innerWidth; snowCanvas.height = innerHeight; }
@@ -173,7 +185,6 @@
         }
         drawSnow();
 
-        // Partículas doradas
         const canvas = document.getElementById('magic-dust');
         const ctx = canvas.getContext('2d');
         let particles = [];
