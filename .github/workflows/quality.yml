@@ -1,0 +1,50 @@
+name: Invitation static integrity
+
+on:
+  push:
+    branches: [fix/placeholder-invite-links-20261124]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify all invitation routes and local assets
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urlsplit, unquote
+          class Assets(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.paths=[]
+              def handle_starttag(self, tag, attrs):
+                  a=dict(attrs)
+                  for key in ("src", "href", "poster"):
+                      value=a.get(key, "")
+                      if value and not value.startswith(('#', '/', '//')) and not urlsplit(value).scheme and '{' not in value:
+                          self.paths.append(value)
+          count=0
+          for html in sorted(Path('.').rglob('*.html')):
+              if '.git' in html.parts: continue
+              source=html.read_text(encoding='utf-8')
+              assert 'URL_GOOGLE_MAPS' not in source, html
+              assert 'NUMERO_WHATSAPP' not in source, html
+              assert 'Viernes, 15 de Noviembre' not in source, html
+              parser=Assets(); parser.feed(source)
+              for value in parser.paths:
+                  path=(html.parent / unquote(urlsplit(value).path))
+                  assert path.exists(), f'{html}: {value}'
+              count+=1
+          assert count>=6
+          print(f'{count} invitation pages: all local assets and links verified')
+          PY
