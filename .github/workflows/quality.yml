@@ -2,7 +2,7 @@ name: Invitation static integrity
 
 on:
   push:
-    branches: [fix/placeholder-invite-links-20261124]
+    branches: [main]
   pull_request:
     branches: [main]
 
